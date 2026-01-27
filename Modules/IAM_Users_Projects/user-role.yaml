@@ -1,0 +1,20 @@
+users:
+- username: alice
+  roles:
+    - admin
+
+- username: bob
+  roles:
+    - developer
+
+- username: charlie
+  roles:
+    - audit
+
+- username: diana
+  roles:
+    - readonly
+
+- username: edward
+  roles:
+    - readonly
