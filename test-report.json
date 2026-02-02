@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-01-28T19:12:33.146079",
+  "summary": {
+    "passed": 12,
+    "failed": 0,
+    "warnings": 2,
+    "total": 14
+  },
+  "tests": [
+    {
+      "name": "Endpoint /token/login",
+      "status": "PASS",
+      "message": "Accessible (Status: 400)"
+    },
+    {
+      "name": "Endpoint /token/refresh",
+      "status": "PASS",
+      "message": "Accessible (Status: 400)"
+    },
+    {
+      "name": "Endpoint /token/mfa",
+      "status": "PASS",
+      "message": "Accessible (Status: 400)"
+    },
+    {
+      "name": "CORS Header: access-control-allow-origin",
+      "status": "PASS",
+      "message": "Value: *"
+    },
+    {
+      "name": "CORS Header: access-control-allow-methods",
+      "status": "PASS",
+      "message": "Value: POST,OPTIONS"
+    },
+    {
+      "name": "Response is valid JSON",
+      "status": "PASS",
+      "message": "Keys: ['message']"
+    },
+    {
+      "name": "Content-Type header",
+      "status": "PASS",
+      "message": "application/json"
+    },
+    {
+      "name": "Response time",
+      "status": "PASS",
+      "message": "Avg: 234ms (Good)"
+    },
+    {
+      "name": "Response time consistency",
+      "status": "PASS",
+      "message": "Min: 212ms, Max: 254ms"
+    },
+    {
+      "name": "Concurrent requests",
+      "status": "WARN",
+      "message": "14/20 successful, 6 failed"
+    },
+    {
+      "name": "Concurrent response time",
+      "status": "PASS",
+      "message": "Average: 608ms"
+    },
+    {
+      "name": "Rate limiting active",
+      "status": "WARN",
+      "message": "No 429 responses detected"
+    },
+    {
+      "name": "Request distribution",
+      "status": "PASS",
+      "message": "Success: 0, Throttled: 0, Errors: 150"
+    },
+    {
+      "name": "CloudWatch logs found",
+      "status": "PASS",
+      "message": "Log group: /aws/apigateway/cslb-webhook\t/aws/apigateway/welcome"
+    }
+  ]
+}

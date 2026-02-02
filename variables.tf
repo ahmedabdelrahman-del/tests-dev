@@ -1,22 +1,62 @@
-variable "aws_region" {
-  description = "AWS region for resources"
-  type        = string
-  default     = "us-east-1"
+variable "region" {
+  type    = string
+  default = "us-east-1"
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for VPC"
-  type        = string
-  default     = "10.0.0.0/16"
+variable "project_name" {
+  type    = string
+  default = "token-broker-demo"
 }
 
-variable "subnet_cidr" {
-  description = "CIDR block for subnet"
-  type        = string
-  default     = "10.0.1.0/24"
+variable "stage_name" {
+  type    = string
+  default = "prod"
 }
-variable "s3_bucket_name" {
-  description = "Name of the S3 bucket for static website hosting"
-  type        = string
-  default     = "static-website-yourname-2026"
+
+# Must be unique within the region
+variable "cognito_domain_prefix" {
+  type = string
+}
+
+variable "waf_rate_limit" {
+  description = "Requests per 5 minutes per IP"
+  type        = number
+  default     = 200
+}
+
+variable "apigw_rate_limit" {
+  description = "Requests per second (steady)"
+  type        = number
+  default     = 2
+}
+
+variable "apigw_burst_limit" {
+  description = "Burst limit"
+  type        = number
+  default     = 4
+}
+
+variable "resource_server_identifier" {
+  type    = string
+  default = "https://api.example.local"
+}
+
+variable "scopes" {
+  type    = list(string)
+  default = ["orders.read", "orders.write"]
+}
+
+variable "allow_ip_cidrs" {
+  type    = list(string)
+  default = []
+}
+
+variable "block_ip_cidrs" {
+  type    = list(string)
+  default = []
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }

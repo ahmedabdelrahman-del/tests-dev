@@ -1,0 +1,17 @@
+{
+  "name": "token-broker",
+  "version": "1.0.0",
+  "description": "Lambda token broker with Cognito integration and rate limiting",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "package": "zip -r lambda.zip index.js node_modules package.json",
+    "install-deps": "npm install --production"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.700.0",
+    "@aws-sdk/client-dynamodb": "^3.700.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

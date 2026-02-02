@@ -1,60 +1,97 @@
-# Terraform AWS Modules
+# API Gateway + Lambda + Cognito + DynamoDB
 
-Infrastructure as Code using Terraform and AWS.
+Token broker infrastructure with API Gateway, Lambda, Cognito authentication, and DynamoDB rate limiting.
 
-## Prerequisites
+## 🚀 Quick Start
 
-### 1. Install Terraform
+### 1. Prerequisites
 ```bash
-wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt-get update && sudo apt-get install terraform
+# Install Terraform
 terraform version
-```
 
-### 2. Install AWS CLI v2
-```bash
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-aws --version
-```
-
-### 3. Configure AWS Credentials
-```bash
+# Configure AWS
 aws configure
 ```
 
-Enter your:
-- AWS Access Key ID
-- AWS Secret Access Key
-- Default region (e.g., us-east-1)
-- Output format (json)
-
-## Usage
-
-Initialize Terraform:
+### 2. Deploy Infrastructure
 ```bash
 terraform init
-```
-
-Validate configuration:
-```bash
-terraform validate
-```
-
-Plan infrastructure changes:
-```bash
 terraform plan
+terraform apply --auto-approve
 ```
 
-Apply changes:
+### 3. Test API
 ```bash
+python3 tests/test-comprehensive.py
+```
+
+## 📊 Infrastructure
+
+- **API Gateway**: 50 req/sec throttle, 100 burst limit
+- **Lambda**: Node.js 20.x token broker
+- **Cognito**: User authentication pool
+- **DynamoDB**: Rate limiting table
+- **CloudWatch**: Full logging enabled
+
+## 🧪 Testing
+
+Run comprehensive tests including rate limit verification:
+
+```bash
+python3 tests/test-comprehensive.py
+```
+
+**Tests Include:**
+- ✓ Endpoint connectivity (3 endpoints)
+- ✓ CORS configuration
+- ✓ Response format validation
+- ✓ Performance metrics
+- ✓ Concurrent request handling (20 concurrent)
+- ✓ **Rate limiting verification** (150+ requests exceeding limit)
+- ✓ CloudWatch logging
+
+**Expected Results:**
+- Endpoints responding: ✓
+- CORS headers: ✓
+- Throttling active: ✓ (429 responses when limit exceeded)
+
+## 🔧 Commands
+
+```bash
+# Plan changes
+terraform plan
+
+# Deploy
 terraform apply
+
+# Destroy
+terraform destroy
+
+# Get outputs
+terraform output -json
+
+# View logs
+aws logs tail /aws/apigateway/token-broker-dev-* --follow
 ```
 
-Destroy infrastructure:
-```bash
-terraform destroy
+## 📁 Structure
+
+```
+├── README.md                          # This file
+├── main.tf                            # Root module
+├── variables.tf                       # Variables
+├── outputs.tf                         # Outputs
+├── provider.tf                        # AWS provider
+├── terraform.tfvars                   # Configuration
+├── Api_gateway_Lambda/                # API + Lambda modules
+│   ├── API_gate_way_Module/
+│   ├── Lambda_Token_Broker_Module/
+│   ├── cognito_user_pool_Module/
+│   ├── Data_Base_Module/
+│   ├── monitoring_Module/
+│   └── waf_apigw_rest_Module/
+├── Modules/                           # Additional modules
+└── tests/
+    └── test-comprehensive.py          # Comprehensive test suite
 ```
 
