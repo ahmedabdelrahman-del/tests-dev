@@ -9,10 +9,22 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+tfplan
 
 # AWS
 aws/
 awscliv2.zip
+
+# Node
+node_modules/
+package-lock.json
+
+# Build & Artifacts
+*.zip
+build/
+dist/
+test-report.json
+test-env.sh
 
 # OS
 .DS_Store
