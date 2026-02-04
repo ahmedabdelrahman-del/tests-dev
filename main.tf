@@ -1,54 +1,47 @@
-module "Cognito_Module" {
-  source = "/workspaces/Terraform_Aws_Modules/task2/Cognito_Module"
-
-  name                    = var.project_name
-  region                  = var.region
-  domain_prefix           = var.cognito_domain_prefix
-  resource_server_identifier = var.resource_server_identifier
-  scopes                  = var.scopes
-  tags                    = var.tags
+module "cognito_module" {
+  source       = "/workspaces/Terraform_Aws_Modules/task2_update/cognito_module"
+  aws_region   = var.aws_region
+  project_name = var.project_name
+  callback_urls = var.callback_urls
+  logout_urls   = var.logout_urls
+  user_pool_tier = var.user_pool_tier
+}
+module "security_string_module" {
+  source     = "/workspaces/Terraform_Aws_Modules/task2_update/secure_string_module"
+  aws_region = var.aws_region
+  name_prefix = var.project_name
+  cognito_token_url = module.cognito_module.cognito_token_url
+  cognito_client_id = module.cognito_module.m2m_client_id
+  cognito_client_secret = module.cognito_module.m2m_client_secret
+  allowed_scopes = [ "${module.cognito_module.resource_server_identifier}/tokens.read", "${module.cognito_module.resource_server_identifier}/tokens.write" ]
+    tags = {
+    owner   = "Ahmed Abdelrahman"
+    system  = "token-broker"
+    purpose = "cognito-broker-secrets"
+  }
+}
+module "lambda_module" {
+  source       = "/workspaces/Terraform_Aws_Modules/task2_update/lambda_module"
+  project_name = var.project_name
+  broker_parameter_arns = module.security_string_module.parameter_arns
+  broker_parameter_names = module.security_string_module.parameter_names
+}
+module "api_gateway_module" {
+  source        = "/workspaces/Terraform_Aws_Modules/task2_update/api_gateway_module"
+  project_name  = var.project_name
+  aws_region    = var.aws_region
+  api_stage_name = var.api_stage_name
+  enable_api_key = var.enable_api_key
+  lambda_invoke_arn = module.lambda_module.token_broker_lambda_invoke_arn
 }
 
-module "Lambda_Function_Module" {
-  source = "/workspaces/Terraform_Aws_Modules/task2/Lambda_Function_Module"
+# Allow API Gateway to invoke the Lambda function
+resource "aws_lambda_permission" "allow_apigw_invoke" {
+  statement_id  = "AllowExecutionFromAPIGatewayTokenBroker"
+  action        = "lambda:InvokeFunction"
+  function_name = module.lambda_module.token_broker_lambda_name
+  principal     = "apigateway.amazonaws.com"
 
-  name                     = "${var.project_name}-token-broker"
-  cognito_token_url         = module.Cognito_Module.token_url
-  cognito_client_id         = module.Cognito_Module.client_id
-  cognito_client_secret_arn = module.Cognito_Module.client_secret_arn
-
-  # optional: request a default scope
-  default_scope            = module.Cognito_Module.allowed_scopes[1] # e.g. orders.write (just demo)
-  tags                     = var.tags
-}
-
-module "API_GateWay_Module" {
-  source = "/workspaces/Terraform_Aws_Modules/task2/API_GateWay_Module"
-
-  name                 = var.project_name
-  region               = var.region
-  stage_name           = var.stage_name
-  lambda_invoke_arn     = module.Lambda_Function_Module.invoke_arn
-  lambda_function_name  = module.Lambda_Function_Module.function_name
-
-  throttle_rate_limit   = var.apigw_rate_limit
-  throttle_burst_limit  = var.apigw_burst_limit
-
-  tags                 = var.tags
-}
-
-module "WAF_Module" {
-  source = "/workspaces/Terraform_Aws_Modules/task2/WAF_Module"
-  name                = var.project_name
-  scope               = "REGIONAL"
-
-  # Associate WAF to the API Gateway stage
-  target_resource_arn = module.API_GateWay_Module.stage_arn
-
-  global_rate_limit      = 10000
-  token_path_rate_limit  = var.waf_rate_limit
-  allow_ip_cidrs      = var.allow_ip_cidrs
-  block_ip_cidrs      = var.block_ip_cidrs
-
-  tags                = var.tags
+  # Restrict to this API, any stage, POST method, and /oauth2/token
+  source_arn = "${module.api_gateway_module.api_execution_arn}/*/POST/oauth2/token"
 }

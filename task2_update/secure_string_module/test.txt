@@ -1,0 +1,22 @@
+### make sure it is created in aws
+aws ssm get-parameters-by-path \
+  --path "/cognito-throttle-lab/dev/broker" \
+  --recursive \
+  --with-decryption
+##### Types are correct (String vs SecureString)
+aws ssm get-parameter \
+  --name "/cognito-throttle-lab/dev/broker/cognito_client_secret" \
+  --with-decryption
+  #### json out put 
+  @ahmedabdelrahman-del ➜ /workspaces/Terraform_Aws_Modules (main) $ aws ssm get-parameter \
+  --name "/cognito-throttle-lab/dev/broker/allowed_scopes" \
+  --query "Parameter.Value" \
+  --output text
+
+  ####################Decryption works
+  aws ssm get-parameter \
+  --name "/cognito-throttle-lab/dev/broker/cognito_client_secret" \
+  --with-decryption \
+  --query "Parameter.Value" \
+  --output text
+

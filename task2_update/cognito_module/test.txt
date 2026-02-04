@@ -1,0 +1,21 @@
+terraform output cognito_token_url
+terraform output m2m_client_id
+terraform output -raw m2m_client_secret
+terraform output resource_server_identifier
+##############################################
+TOKEN_URL="$(terraform output -raw cognito_token_url)"
+CLIENT_ID="$(terraform output -raw m2m_client_id)"
+CLIENT_SECRET="$(terraform output -raw m2m_client_secret)"
+RS_ID="$(terraform output -raw resource_server_identifier)"
+
+curl -sS -X POST "$TOKEN_URL" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -u "${CLIENT_ID}:${CLIENT_SECRET}" \
+  --data-urlencode "grant_type=client_credentials" \
+  --data-urlencode "scope=${RS_ID}/tokens.read"
+  ########################################################(test with real email to get verification and hit cognito)
+aws cognito-idp sign-up \
+  --client-id <interactive_client_id> \
+  --username your-real-email@example.com \
+  --password 'StrongPassword123!' \
+  --user-attributes Name=email,Value=your-real-email@example.com

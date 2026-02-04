@@ -1,0 +1,7 @@
+## test without API_GateWay_Module ###
+aws lambda invoke \
+  --function-name "$(terraform output -raw token_broker_lambda_name)" \
+  --payload '{"headers":{"Content-Type":"application/x-www-form-urlencoded"},"body":"grant_type=client_credentials&scope=https://api.throttle-lab-u05gxq.local/tokens.read"}' \
+  --region us-east-1 \
+  --cli-binary-format raw-in-base64-out \
+  response.json && cat response.json
